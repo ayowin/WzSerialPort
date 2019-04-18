@@ -1,4 +1,4 @@
-
+﻿
 #include "WzSerialPort.h"
 
 #include <stdio.h>
@@ -28,25 +28,25 @@ bool WzSerialPort::open(const char* portname,
 	HANDLE hCom = NULL;
 	if (this->synchronizeflag)
 	{
-		//ͬ����ʽ
-		hCom = CreateFileA(portname, //������
-									GENERIC_READ | GENERIC_WRITE, //֧�ֶ�д
-									0, //��ռ��ʽ�����ڲ�֧�ֹ���
-									NULL,//��ȫ����ָ�룬Ĭ��ֵΪNULL
-									OPEN_EXISTING, //�����еĴ����ļ�
-									0, //0��ͬ����ʽ��FILE_FLAG_OVERLAPPED���첽��ʽ
-									NULL);//���ڸ����ļ������Ĭ��ֵΪNULL���Դ��ڶ��Ըò���������ΪNULL
+		//同步方式
+		hCom = CreateFileA(portname, //串口名
+									GENERIC_READ | GENERIC_WRITE, //支持读写
+									0, //独占方式，串口不支持共享
+									NULL,//安全属性指针，默认值为NULL
+									OPEN_EXISTING, //打开现有的串口文件
+									0, //0：同步方式，FILE_FLAG_OVERLAPPED：异步方式
+									NULL);//用于复制文件句柄，默认值为NULL，对串口而言该参数必须置为NULL
 	}
 	else
 	{
-		//�첽��ʽ
-		hCom = CreateFileA(portname, //������
-									GENERIC_READ | GENERIC_WRITE, //֧�ֶ�д
-									0, //��ռ��ʽ�����ڲ�֧�ֹ���
-									NULL,//��ȫ����ָ�룬Ĭ��ֵΪNULL
-									OPEN_EXISTING, //�����еĴ����ļ�
-									FILE_FLAG_OVERLAPPED, //0��ͬ����ʽ��FILE_FLAG_OVERLAPPED���첽��ʽ
-									NULL);//���ڸ����ļ������Ĭ��ֵΪNULL���Դ��ڶ��Ըò���������ΪNULL
+		//异步方式
+		hCom = CreateFileA(portname, //串口名
+									GENERIC_READ | GENERIC_WRITE, //支持读写
+									0, //独占方式，串口不支持共享
+									NULL,//安全属性指针，默认值为NULL
+									OPEN_EXISTING, //打开现有的串口文件
+									FILE_FLAG_OVERLAPPED, //0：同步方式，FILE_FLAG_OVERLAPPED：异步方式
+									NULL);//用于复制文件句柄，默认值为NULL，对串口而言该参数必须置为NULL
 	}
 	
 	if(hCom == (HANDLE)-1)
@@ -54,67 +54,67 @@ bool WzSerialPort::open(const char* portname,
 		return false;
 	}
 
-	//���û�������С 
+	//配置缓冲区大小 
 	if(! SetupComm(hCom,1024, 1024))
 	{
 		return false;
 	}
 
-	// ���ò��� 
+	// 配置参数 
 	DCB p;
 	memset(&p, 0, sizeof(p));
 	p.DCBlength = sizeof(p);
-	p.BaudRate = baudrate; // ������
-	p.ByteSize = databit; // ����λ
+	p.BaudRate = baudrate; // 波特率
+	p.ByteSize = databit; // 数据位
 
-	switch (parity) //У��λ
+	switch (parity) //校验位
 	{   
 	case 0:   
-		p.Parity = NOPARITY; //��У��
+		p.Parity = NOPARITY; //无校验
 		break;  
 	case 1:   
-		p.Parity = ODDPARITY; //��У��
+		p.Parity = ODDPARITY; //奇校验
 		break;  
 	case 2:
-		p.Parity = EVENPARITY; //żУ��
+		p.Parity = EVENPARITY; //偶校验
 		break;
 	case 3:
-		p.Parity = MARKPARITY; //���У��
+		p.Parity = MARKPARITY; //标记校验
 		break;
 	}
 
-	switch(stopbit) //ֹͣλ
+	switch(stopbit) //停止位
 	{
 	case 1:
-		p.StopBits = ONESTOPBIT; //1λֹͣλ
+		p.StopBits = ONESTOPBIT; //1位停止位
 		break;
 	case 2:
-		p.StopBits = TWOSTOPBITS; //2λֹͣλ
+		p.StopBits = TWOSTOPBITS; //2位停止位
 		break;
 	case 3:
-		p.StopBits = ONE5STOPBITS; //1.5λֹͣλ
+		p.StopBits = ONE5STOPBITS; //1.5位停止位
 		break;
 	}
 
 	if(! SetCommState(hCom, &p))
 	{
-		// ���ò���ʧ��
+		// 设置参数失败
 		return false;
 	}
 
-	//��ʱ����,��λ������
-	//�ܳ�ʱ��ʱ��ϵ��������д���ַ�����ʱ�䳣��
+	//超时处理,单位：毫秒
+	//总超时＝时间系数×读或写的字符数＋时间常量
 	COMMTIMEOUTS TimeOuts;
-	TimeOuts.ReadIntervalTimeout = 1000; //�������ʱ
-	TimeOuts.ReadTotalTimeoutMultiplier = 500; //��ʱ��ϵ��
-	TimeOuts.ReadTotalTimeoutConstant = 5000; //��ʱ�䳣��
-	TimeOuts.WriteTotalTimeoutMultiplier = 500; // дʱ��ϵ��
-	TimeOuts.WriteTotalTimeoutConstant = 2000; //дʱ�䳣��
+	TimeOuts.ReadIntervalTimeout = 1000; //读间隔超时
+	TimeOuts.ReadTotalTimeoutMultiplier = 500; //读时间系数
+	TimeOuts.ReadTotalTimeoutConstant = 5000; //读时间常量
+	TimeOuts.WriteTotalTimeoutMultiplier = 500; // 写时间系数
+	TimeOuts.WriteTotalTimeoutConstant = 2000; //写时间常量
 	SetCommTimeouts(hCom,&TimeOuts);
 
-	PurgeComm(hCom,PURGE_TXCLEAR|PURGE_RXCLEAR);//��մ��ڻ�����
+	PurgeComm(hCom,PURGE_TXCLEAR|PURGE_RXCLEAR);//清空串口缓冲区
 
-	memcpy(pHandle, &hCom, sizeof(hCom));// ������
+	memcpy(pHandle, &hCom, sizeof(hCom));// 保存句柄
 
 	return true;
 }
@@ -131,13 +131,13 @@ int WzSerialPort::send(const void *buf,int len)
 
 	if (this->synchronizeflag)
 	{
-		// ͬ����ʽ
-		DWORD dwBytesWrite = len; //�ɹ�д��������ֽ���
-		BOOL bWriteStat = WriteFile(hCom, //���ھ��
-									buf, //�����׵�ַ
-									dwBytesWrite, //Ҫ���͵������ֽ���
-									&dwBytesWrite, //DWORD*���������շ��سɹ����͵������ֽ���
-									NULL); //NULLΪͬ�����ͣ�OVERLAPPED*Ϊ�첽����
+		// 同步方式
+		DWORD dwBytesWrite = len; //成功写入的数据字节数
+		BOOL bWriteStat = WriteFile(hCom, //串口句柄
+									buf, //数据首地址
+									dwBytesWrite, //要发送的数据字节数
+									&dwBytesWrite, //DWORD*，用来接收返回成功发送的数据字节数
+									NULL); //NULL为同步发送，OVERLAPPED*为异步发送
 		if (!bWriteStat)
 		{
 			return 0;
@@ -146,32 +146,32 @@ int WzSerialPort::send(const void *buf,int len)
 	}
 	else
 	{
-		//�첽��ʽ
-		DWORD dwBytesWrite = len; //�ɹ�д��������ֽ���
-		DWORD dwErrorFlags; //�����־
-		COMSTAT comStat; //ͨѶ״̬
-		OVERLAPPED m_osWrite; //�첽��������ṹ��
+		//异步方式
+		DWORD dwBytesWrite = len; //成功写入的数据字节数
+		DWORD dwErrorFlags; //错误标志
+		COMSTAT comStat; //通讯状态
+		OVERLAPPED m_osWrite; //异步输入输出结构体
 
-		//����һ������OVERLAPPED���¼����������������õ�����ϵͳҪ����ô��
+		//创建一个用于OVERLAPPED的事件处理，不会真正用到，但系统要求这么做
 		memset(&m_osWrite, 0, sizeof(m_osWrite));
 		m_osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, L"WriteEvent");
 
-		ClearCommError(hCom, &dwErrorFlags, &comStat); //���ͨѶ���󣬻���豸��ǰ״̬
-		BOOL bWriteStat = WriteFile(hCom, //���ھ��
-			buf, //�����׵�ַ
-			dwBytesWrite, //Ҫ���͵������ֽ���
-			&dwBytesWrite, //DWORD*���������շ��سɹ����͵������ֽ���
-			&m_osWrite); //NULLΪͬ�����ͣ�OVERLAPPED*Ϊ�첽����
+		ClearCommError(hCom, &dwErrorFlags, &comStat); //清除通讯错误，获得设备当前状态
+		BOOL bWriteStat = WriteFile(hCom, //串口句柄
+			buf, //数据首地址
+			dwBytesWrite, //要发送的数据字节数
+			&dwBytesWrite, //DWORD*，用来接收返回成功发送的数据字节数
+			&m_osWrite); //NULL为同步发送，OVERLAPPED*为异步发送
 		if (!bWriteStat)
 		{
-			if (GetLastError() == ERROR_IO_PENDING) //�����������д��
+			if (GetLastError() == ERROR_IO_PENDING) //如果串口正在写入
 			{
-				WaitForSingleObject(m_osWrite.hEvent, 1000); //�ȴ�д���¼�1����
+				WaitForSingleObject(m_osWrite.hEvent, 1000); //等待写入事件1秒钟
 			}
 			else
 			{
-				ClearCommError(hCom, &dwErrorFlags, &comStat); //���ͨѶ����
-				CloseHandle(m_osWrite.hEvent); //�رղ��ͷ�hEvent�ڴ�
+				ClearCommError(hCom, &dwErrorFlags, &comStat); //清除通讯错误
+				CloseHandle(m_osWrite.hEvent); //关闭并释放hEvent内存
 				return 0;
 			}
 		}
@@ -185,13 +185,13 @@ int WzSerialPort::receive(void *buf,int maxlen)
 
 	if (this->synchronizeflag)
 	{
-		//ͬ����ʽ
-		DWORD wCount = maxlen; //�ɹ���ȡ�������ֽ���
-		BOOL bReadStat = ReadFile(hCom, //���ھ��
-									buf, //�����׵�ַ
-									wCount, //Ҫ��ȡ����������ֽ���
-									&wCount, //DWORD*,�������շ��سɹ���ȡ�������ֽ���
-									NULL); //NULLΪͬ�����ͣ�OVERLAPPED*Ϊ�첽����
+		//同步方式
+		DWORD wCount = maxlen; //成功读取的数据字节数
+		BOOL bReadStat = ReadFile(hCom, //串口句柄
+									buf, //数据首地址
+									wCount, //要读取的数据最大字节数
+									&wCount, //DWORD*,用来接收返回成功读取的数据字节数
+									NULL); //NULL为同步发送，OVERLAPPED*为异步发送
 		if (!bReadStat)
 		{
 			return 0;
@@ -200,36 +200,36 @@ int WzSerialPort::receive(void *buf,int maxlen)
 	}
 	else
 	{
-		//�첽��ʽ
-		DWORD wCount = maxlen; //�ɹ���ȡ�������ֽ���
-		DWORD dwErrorFlags; //�����־
-		COMSTAT comStat; //ͨѶ״̬
-		OVERLAPPED m_osRead; //�첽��������ṹ��
+		//异步方式
+		DWORD wCount = maxlen; //成功读取的数据字节数
+		DWORD dwErrorFlags; //错误标志
+		COMSTAT comStat; //通讯状态
+		OVERLAPPED m_osRead; //异步输入输出结构体
 
-		//����һ������OVERLAPPED���¼����������������õ�����ϵͳҪ����ô��
+		//创建一个用于OVERLAPPED的事件处理，不会真正用到，但系统要求这么做
 		memset(&m_osRead, 0, sizeof(m_osRead));
 		m_osRead.hEvent = CreateEvent(NULL, TRUE, FALSE, L"ReadEvent");
 
-		ClearCommError(hCom, &dwErrorFlags, &comStat); //���ͨѶ���󣬻���豸��ǰ״̬
-		if (!comStat.cbInQue)return 0; //������뻺�����ֽ���Ϊ0���򷵻�false
+		ClearCommError(hCom, &dwErrorFlags, &comStat); //清除通讯错误，获得设备当前状态
+		if (!comStat.cbInQue)return 0; //如果输入缓冲区字节数为0，则返回false
 
-		BOOL bReadStat = ReadFile(hCom, //���ھ��
-			buf, //�����׵�ַ
-			wCount, //Ҫ��ȡ����������ֽ���
-			&wCount, //DWORD*,�������շ��سɹ���ȡ�������ֽ���
-			&m_osRead); //NULLΪͬ�����ͣ�OVERLAPPED*Ϊ�첽����
+		BOOL bReadStat = ReadFile(hCom, //串口句柄
+			buf, //数据首地址
+			wCount, //要读取的数据最大字节数
+			&wCount, //DWORD*,用来接收返回成功读取的数据字节数
+			&m_osRead); //NULL为同步发送，OVERLAPPED*为异步发送
 		if (!bReadStat)
 		{
-			if (GetLastError() == ERROR_IO_PENDING) //����������ڶ�ȡ��
+			if (GetLastError() == ERROR_IO_PENDING) //如果串口正在读取中
 			{
-				//GetOverlappedResult���������һ��������ΪTRUE
-				//������һֱ�ȴ���ֱ����������ɻ����ڴ��������
+				//GetOverlappedResult函数的最后一个参数设为TRUE
+				//函数会一直等待，直到读操作完成或由于错误而返回
 				GetOverlappedResult(hCom, &m_osRead, &wCount, TRUE);
 			}
 			else
 			{
-				ClearCommError(hCom, &dwErrorFlags, &comStat); //���ͨѶ����
-				CloseHandle(m_osRead.hEvent); //�رղ��ͷ�hEvent���ڴ�
+				ClearCommError(hCom, &dwErrorFlags, &comStat); //清除通讯错误
+				CloseHandle(m_osRead.hEvent); //关闭并释放hEvent的内存
 				return 0;
 			}
 		}

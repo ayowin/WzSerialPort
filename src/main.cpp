@@ -1,4 +1,4 @@
-
+ï»¿
 #include <iostream>
 #include "WzSerialPort.h"
 
@@ -38,12 +38,12 @@ void receiveDemo()
 
 int main(int argumentCount, const char* argumentValues[]) 
 {
-	// ¼ÙÉèCOM1ÒÑ¾­ºÍÁíÍâÒ»¸ö´®¿ÚÁ¬½ÓºÃÁË
+	// å‡è®¾COM1å·²ç»å’Œå¦å¤–ä¸€ä¸ªä¸²å£è¿æ¥å¥½äº†
 
-	// ·¢ËÍ demo
+	// å‘é€ demo
 	sendDemo();
 
-	// ½ÓÊÕ demo
+	// æ¥æ”¶ demo
 	//receiveDemo();
 
 	getchar();
