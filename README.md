@@ -1,5 +1,7 @@
 # WZSerialPort
 
+*源码为UTF-8带BOM格式，建议用该编码格式打开*
+
 **windows上的C++串口库，封装系统的原生API**
 
 **参考本项目使用**
