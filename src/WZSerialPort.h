@@ -8,20 +8,14 @@
 	类名：WZSerialPort
 	用途：串口读写
 	示例：
-		WZSerialPort w;
-		if(w.open("COM1",9600，0，8，1))
-		{
-			w.send("helloworld",10);
-			char buf[1024];
-			w.receive(buf,1024);
-		}	
+		参考 main.cpp	
 */
 
-class WZSerialPort
+class WzSerialPort
 {
 public:
-	WZSerialPort();
-	~WZSerialPort();
+	WzSerialPort();
+	~WzSerialPort();
 
 	// 打开串口,成功返回true，失败返回false
 	// portname(串口名): 在Windows下是"COM1""COM2"等，在Linux下是"/dev/ttyS1"等

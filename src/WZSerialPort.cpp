@@ -1,5 +1,5 @@
 
-#include "WZSerialPort.h"
+#include "WzSerialPort.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -7,17 +7,17 @@
 #include <WinSock2.h>
 #include <windows.h>
 
-WZSerialPort::WZSerialPort()
+WzSerialPort::WzSerialPort()
 {
 
 }
 
-WZSerialPort::~WZSerialPort()
+WzSerialPort::~WzSerialPort()
 {
 
 }
 
-bool WZSerialPort::open(const char* portname,
+bool WzSerialPort::open(const char* portname,
 						int baudrate,
 						char parity,
 						char databit,
@@ -119,13 +119,13 @@ bool WZSerialPort::open(const char* portname,
 	return true;
 }
 
-void WZSerialPort::close()
+void WzSerialPort::close()
 {
 	HANDLE hCom = *(HANDLE*)pHandle;
 	CloseHandle(hCom);
 }
 
-int WZSerialPort::send(const void *buf,int len)
+int WzSerialPort::send(const void *buf,int len)
 {
 	HANDLE hCom = *(HANDLE*)pHandle;
 
@@ -179,7 +179,7 @@ int WZSerialPort::send(const void *buf,int len)
 	}
 }
 
-int WZSerialPort::receive(void *buf,int maxlen)
+int WzSerialPort::receive(void *buf,int maxlen)
 {
 	HANDLE hCom = *(HANDLE*)pHandle;
 

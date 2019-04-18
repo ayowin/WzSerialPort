@@ -1,5 +1,5 @@
-#WZSerialPort
+# WZSerialPort
 
-windows上的C++串口库，封装系统的原生API
+**windows上的C++串口库，封装系统的原生API**
 
-头文件中有使用说明。
+**参考本项目使用。**
