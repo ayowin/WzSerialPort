@@ -14,7 +14,7 @@ void sendDemo()
 		{
 			w.send("helloworld", 10);
 		}
-		cout << "send demo finished...";
+		cout << "send demo finished..."<<endl;
 		w.close();
 	}
 	else
@@ -44,11 +44,10 @@ int main(int argumentCount, const char* argumentValues[])
 	// 假设 /dev/ttyS1 已经和另外一个串口连接好了
 
 	// 发送 demo
-	// sendDemo();
+	sendDemo();
 
 	// 接收 demo
 	receiveDemo();
 
-	getchar();
 	return 0;
 } 
