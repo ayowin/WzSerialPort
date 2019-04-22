@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>    
+#include <string.h>
 #include <unistd.h>    
 #include <sys/types.h>  
 #include <sys/stat.h>   
@@ -142,6 +143,13 @@ bool WzSerialPort::open(const char* portname, int baudrate, char parity, char da
             return false;
     }
 
+    // 激活新配置
+    if((tcsetattr(pHandle[0],TCSANOW,&options))!=0) 
+    { 
+        std::cout << portname << " open failed , can not complete set attributes ." << std::endl;
+        return false; 
+    } 
+
     return true;
 }
 
@@ -190,15 +198,9 @@ int WzSerialPort::send(const void *buf,int len)
 int WzSerialPort::receive(void *buf,int maxlen)
 {
     int receiveCount = ::read(pHandle[0],buf,maxlen);
-
-    // std::cout << "before: " << receiveCount << std::endl;
-
     if(receiveCount < 0)
     {
         receiveCount = 0;
     }
-
-    // std::cout << "complete: " << receiveCount << std::endl;
-
     return receiveCount;
 }

@@ -29,11 +29,10 @@ void receiveDemo()
 	if (w.open("/dev/ttyS1", 9600, 0, 8, 1))
 	{
 		char buf[1024];
-		int received =0;
 		while (true)
 		{
 			memset(buf, 0,1024);
-			received = w.receive(buf, 1024);
+			w.receive(buf, 1024);
 			cout<<buf;
 		}
 	}
@@ -44,7 +43,7 @@ int main(int argumentCount, const char* argumentValues[])
 	// 假设 /dev/ttyS1 已经和另外一个串口连接好了
 
 	// 发送 demo
-	sendDemo();
+	// sendDemo();
 
 	// 接收 demo
 	receiveDemo();
