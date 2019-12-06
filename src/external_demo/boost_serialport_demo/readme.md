@@ -2,6 +2,6 @@
 
 ## 编译运行
 ```shell
-    g++ main.cpp -std=c++11 -lboost_system -I./ -lpthread
+    g++ main.cpp -std=c++11 -I./ -lpthread
     sudo ./a.out
 ```
