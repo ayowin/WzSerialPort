@@ -27,6 +27,7 @@
 ## Linux上的常见问题：
 * 串口无法打开，可能是由于权限的问题，sudo一般可解决这个问题。
 * 读串口的时候，有阻塞的现象，经测试，仅仅是Ubuntu18.04上出现来该问题，这可能是虚拟串口的原因，后续使用实际串口中如果仍有该问题，后续再更新...
+* <font color="red">有读者反馈Linux上还是有问题，小编以回调的方式重新封装了WzSerialportPlus工程，并应用在自动化项目中，项目地址：</font>[https://github.com/ayowin/WzSerialportPlus](https://github.com/ayowin/WzSerialportPlus)
 
 ---
 
